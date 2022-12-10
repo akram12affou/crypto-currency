@@ -1,37 +1,31 @@
 import React, { useEffect } from 'react'
 import {useParams} from 'react-router-dom'
 import axios from 'axios'
+import {useGetCoinQuery} from '../features/CoinSlice'
 import { useState } from 'react'
+import LoadingSpinner from '../features/loadingSpinner'
 function CoinDetails() {
-    const [coin, setCoin] = useState([])
-    const [loading,setLoading] = useState(false)
     const params = useParams("/coin/:id")
     const {id} = params
-    
-    useEffect(() => {
-      setLoading(true)
-    axios.get('https://api.coingecko.com/api/v3/coins/' + id)
-    .then((res) => setCoin(res.data))
-    .finally(() => setLoading(false))
-     
-    
-  },[])
-  
-  
-    
+    const {
+      data: coin,
+      isLoading,
+      isSuccess,
+      isError,
+      error
+  } = useGetCoinQuery(id)
   return (
     <div>
         {[coin].map((e) => {
           
             return (
               <>
-             {  !loading ? (
-               <div key={e.id}>
-                  <p>{e.name}</p>
-               </div> ) : (<div>
-                  <p>...loading</p>
-               </div>)
-               }
+              {
+                isLoading && <LoadingSpinner/>
+              }
+              {
+                isSuccess && <p>{e.name}</p>
+              }
               
                </>
             ) 
